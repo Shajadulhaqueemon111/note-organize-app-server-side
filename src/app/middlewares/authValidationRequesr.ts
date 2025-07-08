@@ -6,6 +6,7 @@ import catchAsync from '../modules/utils/catchAsync';
 import AppError from '../error/app.error';
 import { validUserForLogin } from '../modules/auth/auth.utils';
 import { TUserRole } from '../modules/user/user.interface';
+
 const authValidateRequest = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     //if check the token is client side sent token

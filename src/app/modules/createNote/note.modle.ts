@@ -1,4 +1,5 @@
-import { model, Schema } from 'mongoose';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { model, Query, Schema } from 'mongoose';
 import { INote } from './note.interface';
 
 const NoteSchema = new Schema<INote>(
@@ -23,11 +24,18 @@ const NoteSchema = new Schema<INote>(
       type: Boolean,
       default: false,
     },
+    userId: {
+      type: String,
+    },
   },
   {
     timestamps: true,
   },
 );
+NoteSchema.pre(/^find/, function (this: Query<any, any>, next) {
+  this.where({ isDeleted: false });
+  next();
+});
 
 const NoteModle = model<INote>('Notes', NoteSchema);
 

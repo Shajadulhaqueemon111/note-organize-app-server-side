@@ -11,7 +11,7 @@ route.post(
   createNoteController.createNote,
 );
 route.get('/', createNoteController.getAllNote);
-route.get('/:_id', createNoteController.getSingleNote);
+route.get('/:id', createNoteController.getSingleNote);
 route.patch(
   '/:_id',
   validateRequest(NoteZodValidationSchema.updateNoteZodSchema),

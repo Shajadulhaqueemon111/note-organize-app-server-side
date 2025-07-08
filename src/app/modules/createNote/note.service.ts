@@ -27,7 +27,11 @@ const updateNoteInroDB = async (_id: string, payload: Partial<INote>) => {
 };
 
 const deleteNoteIntoDB = async (_id: string) => {
-  const result = await NoteModle.findByIdAndDelete(_id);
+  const result = await NoteModle.findByIdAndUpdate(
+    _id,
+    { isDeleted: true },
+    { new: true },
+  );
 
   return result;
 };

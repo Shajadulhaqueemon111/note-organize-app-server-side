@@ -7,7 +7,7 @@ const createNoteZodSchema = z.object({
     category: z.string({ required_error: 'Category is required' }),
     isArchived: z.boolean({ required_error: 'isArchived is required' }),
     isDeleted: z.boolean({ required_error: 'isDeleted is required' }),
-    userId: z.string().optional(),
+    userId: z.string({ required_error: 'userId must be added' }),
   }),
 });
 const updateNoteZodSchema = z.object({

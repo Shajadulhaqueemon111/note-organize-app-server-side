@@ -4,5 +4,5 @@ export interface INote {
   category: string;
   isArchived: boolean;
   isDeleted: boolean;
-  userId?: string;
+  userId: string;
 }
