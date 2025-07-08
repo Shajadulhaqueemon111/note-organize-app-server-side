@@ -2,7 +2,8 @@
 import { model, Schema } from 'mongoose';
 import { IUser } from './user.interface';
 import config from '../../config';
-import bycript from 'bcryptjs';
+import bcrypt from 'bcryptjs';
+
 const userSchema = new Schema<IUser>(
   {
     name: {
@@ -27,6 +28,11 @@ const userSchema = new Schema<IUser>(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    status: {
+      type: String,
+      enum: ['active', 'blocked'],
+      default: 'active',
+    },
   },
   {
     timestamps: true,
@@ -34,16 +40,15 @@ const userSchema = new Schema<IUser>(
 );
 
 userSchema.pre('save', async function (next) {
-  //   console.log(this, 'pre hook : we will save data');
   const user = this;
-  user.password = await bycript.hash(
+
+  user.password = await bcrypt.hash(
     user.password,
     Number(config.bcrypt_salt_rounds),
   );
   next();
 });
 userSchema.post('save', function (doc, next) {
-  //   console.log(this, 'post hook : we will save data');
   doc.password = '';
   next();
 });

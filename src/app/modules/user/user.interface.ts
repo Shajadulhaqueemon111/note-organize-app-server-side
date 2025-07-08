@@ -6,6 +6,7 @@ export type IUser = {
   profileImage: string;
   password: string;
   role: 'user' | 'admin';
+  status?: 'active' | 'blocked';
 };
 
 export type TUserRole = keyof typeof USER_ROLE;

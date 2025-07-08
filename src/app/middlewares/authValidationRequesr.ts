@@ -4,42 +4,48 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
 import catchAsync from '../modules/utils/catchAsync';
 import AppError from '../error/app.error';
-import { validUserForLogin } from '../modules/auth/auth.utils';
+
 import { TUserRole } from '../modules/user/user.interface';
+import { ValidUserForLogin } from '../modules/auth/auth.utils';
 
 const authValidateRequest = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    //if check the token is client side sent token
-    const token = req.headers.authorization;
-    console.log(token);
-    if (!token) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'You Are Not Autorized !');
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You Are Not Authorized!');
     }
-    //check if the verify token
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload;
-    console.log('amar', decoded);
-    //access routing baced autorization function mean using ka ka route use korta parbe
+
+    const token = authHeader.split(' ')[1];
+    console.log('Token:', token);
+
+    let decoded: JwtPayload;
+    try {
+      decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string,
+      ) as JwtPayload;
+      console.log('Decoded Token:', decoded);
+    } catch (error) {
+      console.error('JWT verify error:', error);
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid or expired token');
+    }
+
     const { role, email } = decoded;
     if (!email || !role) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid Token Payload!');
     }
 
-    const user = await validUserForLogin(email);
-    console.log(user);
-
+    const user = await ValidUserForLogin(email);
     if (!user) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'User not found!');
     }
 
-    // await checkPassword(password, user.password);
     if (requiredRoles && !requiredRoles.includes(role)) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'You Are Not Autorized !');
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You Are Not Authorized!');
     }
-    // decoded undefined
-    req.user = decoded as JwtPayload;
+
+    req.user = decoded;
 
     next();
   });
