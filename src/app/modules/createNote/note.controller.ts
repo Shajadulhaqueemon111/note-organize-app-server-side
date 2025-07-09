@@ -3,7 +3,18 @@ import sendResponse from '../utils/sendResponse';
 import { NoteService } from './note.service';
 import httpStatus from 'http-status';
 const createNote = catchAsync(async (req, res) => {
-  const result = await NoteService.createNoteIntoDB(req.body);
+  if (req.file) {
+    req.body.image = req.file.filename;
+  } else {
+    req.body.image = '';
+    console.log('No file uploaded');
+  }
+  const payload = {
+    ...req.body,
+    isArchived: false,
+    isDeleted: false,
+  };
+  const result = await NoteService.createNoteIntoDB(payload);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -14,7 +25,11 @@ const createNote = catchAsync(async (req, res) => {
 });
 
 const getAllNote = catchAsync(async (req, res) => {
-  const result = await NoteService.getAllNoteIntoDB();
+  const filters = {
+    search: req.query.search as string,
+    category: req.query.category as string,
+  };
+  const result = await NoteService.getAllNoteIntoDB(filters);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -39,12 +54,37 @@ const getSingleNote = catchAsync(async (req, res) => {
 
 const updateNote = catchAsync(async (req, res) => {
   const { _id } = req.params;
-  const payload = req.body;
+  const {
+    title,
+    category,
+    content,
+    createdAt,
+    isArchived,
+    isDeleted,
+    existingImage,
+  } = req.body;
+
+  const image = req.file ? req.file.filename : existingImage;
+
+  const payload = {
+    title,
+    category,
+    content,
+    createdAt,
+    isArchived: isArchived === 'true',
+    isDeleted: isDeleted === 'true',
+    image,
+  };
+  console.log(payload);
+  console.log('BODY:', req.body);
+  console.log('FILE:', req.file);
+
   const result = await NoteService.updateNoteInroDB(_id, payload);
+  console.log(result);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'note updated successfully',
+    message: 'Note updated successfully',
     data: result,
   });
 });

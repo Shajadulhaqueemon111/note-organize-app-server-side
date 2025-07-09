@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { INote } from './note.interface';
 import NoteModle from './note.modle';
 
@@ -6,8 +7,29 @@ const createNoteIntoDB = async (payload: INote) => {
   return result;
 };
 
-const getAllNoteIntoDB = async () => {
-  const result = await NoteModle.find();
+const getAllNoteIntoDB = async (filters: {
+  search?: string;
+  category?: string;
+}) => {
+  const { search, category } = filters;
+
+  const query: any = {};
+
+  if (search) {
+    const regex = new RegExp(search, 'i'); // case-insensitive match
+    query.$or = [
+      { title: { $regex: regex } },
+      { content: { $regex: regex } },
+      { category: { $regex: regex } },
+    ];
+  }
+
+  if (category) {
+    query.category = { $regex: new RegExp(category, 'i') };
+  }
+
+  const result = await NoteModle.find(query).sort({ createdAt: -1 });
+
   return result;
 };
 

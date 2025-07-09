@@ -3,6 +3,10 @@ import { IUser } from './user.interface';
 import UserModel from './user.model';
 import httpStatus from 'http-status';
 const createUserIntoDB = async (payload: IUser) => {
+  const existingUser = await UserModel.findOne({ email: payload.email });
+  if (existingUser) {
+    throw new AppError(400, 'Email already registered');
+  }
   const result = await UserModel.create(payload);
   return result;
 };

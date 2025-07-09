@@ -1,14 +1,31 @@
+import AppError from '../../error/app.error';
 import catchAsync from '../utils/catchAsync';
 import sendResponse from '../utils/sendResponse';
 import { CreateUserService } from './user.service';
 import httpStatus from 'http-status';
 const createUsers = catchAsync(async (req, res) => {
-  const result = await CreateUserService.createUserIntoDB(req.body);
+  const { name, email, password, role } = req.body;
+
+  const profileImage = req.file?.filename;
+
+  if (!profileImage) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Profile image is required');
+  }
+
+  const userData = {
+    name,
+    email,
+    password,
+    profileImage,
+    role,
+  };
+
+  const result = await CreateUserService.createUserIntoDB(userData);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User created successfully',
+    message: 'User register successfully',
     data: result,
   });
 });

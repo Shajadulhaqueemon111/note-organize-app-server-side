@@ -3,7 +3,7 @@ import UserModel from '../user/user.model';
 import httpStatus from 'http-status';
 import bcrypt from 'bcryptjs';
 export const ValidUserForLogin = async (email: string) => {
-  const user = await UserModel.findOne({ email }).select('+password');
+  const user = await UserModel.findOne({ email }).select('+email,+password');
 
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, 'user not found for database');
