@@ -20,8 +20,6 @@ const LoginUser = async (payload: TLogin) => {
 
   const isPasswordMatched = await checkPassword(password, user.password);
 
-  console.log(isPasswordMatched);
-
   if (!isPasswordMatched) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -43,7 +41,7 @@ const LoginUser = async (payload: TLogin) => {
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as unknown as number,
   );
-  console.log(accessToken);
+
   const refreshToken = createToken(
     jwtPayload,
     config.jwt_refress_secreet as string,
@@ -65,10 +63,9 @@ const refreshToken = async (token: string) => {
     token,
     config.jwt_refress_secreet as string,
   ) as JwtPayload;
-  console.log('Decoded Token:', decoded);
 
   const { role, email } = decoded;
-  console.log(role, email);
+
   if (!role || !email) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Invalid toke payload');
   }
@@ -82,7 +79,6 @@ const refreshToken = async (token: string) => {
     profileImage: user.profileImage,
     status: user.status || 'blocked',
   };
-  console.log('JWT Payload for Refresh Token:', jwtPayload);
 
   const accessToken = createToken(
     jwtPayload,

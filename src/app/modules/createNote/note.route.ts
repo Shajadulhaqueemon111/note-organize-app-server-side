@@ -4,7 +4,7 @@ import { NoteZodValidationSchema } from './create.note.zodvalidation';
 import { createNoteController } from './note.controller';
 import authValidateRequest from '../../middlewares/authValidationRequesr';
 import { USER_ROLE } from '../user/user.constant';
-import { upload } from '../../middlewares/uploads';
+import { upload } from '../utils/sendToImageCloudinary';
 
 const route = express.Router();
 

@@ -2,7 +2,7 @@ import express from 'express';
 import { UserController } from './user.controller';
 import validateRequest from '../../middlewares/valiateRequest';
 import { UserZodValidationSchema } from './user.zodValidation';
-import { upload } from '../../middlewares/uploads';
+import { upload } from '../utils/sendToImageCloudinary';
 
 const route = express.Router();
 

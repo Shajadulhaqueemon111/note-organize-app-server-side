@@ -13,9 +13,9 @@ const loginUser = catchAsync(async (req, res) => {
     sameSite: 'strict',
   });
   res.cookie('accessToken', accessToken, {
-    secure: config.NODE_ENV === 'development', // set to true if in production and using HTTPS
-    httpOnly: true, // Prevent access to the cookie from JavaScript
-    sameSite: 'strict', // Helps with CSRF protection
+    secure: config.NODE_ENV === 'development',
+    httpOnly: true,
+    sameSite: 'strict',
   });
   sendResponse(res, {
     statusCode: httpSattus.OK,

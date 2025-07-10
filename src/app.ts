@@ -13,7 +13,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:5173',
-      'https://pharma-door-frontend.vercel.app',
+      'https://my-note-organize-app.vercel.app',
     ],
     credentials: true,
   }),

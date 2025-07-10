@@ -1,25 +1,31 @@
 import AppError from '../../error/app.error';
 import catchAsync from '../utils/catchAsync';
 import sendResponse from '../utils/sendResponse';
+import { sendImageToCloudinary } from '../utils/sendToImageCloudinary';
 import { CreateUserService } from './user.service';
 import httpStatus from 'http-status';
 const createUsers = catchAsync(async (req, res) => {
   const { name, email, password, role } = req.body;
+  const localImagePath = req.file?.path;
 
-  const profileImage = req.file?.filename;
-
-  if (!profileImage) {
+  if (!localImagePath) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Profile image is required');
   }
+
+  // Upload image to cloudinary
+  const cloudinaryResponse = await sendImageToCloudinary(
+    localImagePath,
+    `profile-${Date.now()}`,
+  );
+  const imageUrl = cloudinaryResponse.secure_url;
 
   const userData = {
     name,
     email,
     password,
-    profileImage,
+    profileImage: imageUrl,
     role,
   };
-
   const result = await CreateUserService.createUserIntoDB(userData);
 
   sendResponse(res, {

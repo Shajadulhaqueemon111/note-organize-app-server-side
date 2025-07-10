@@ -1,16 +1,20 @@
 import catchAsync from '../utils/catchAsync';
 import sendResponse from '../utils/sendResponse';
+import { sendImageToCloudinary } from '../utils/sendToImageCloudinary';
 import { NoteService } from './note.service';
 import httpStatus from 'http-status';
 const createNote = catchAsync(async (req, res) => {
-  if (req.file) {
-    req.body.image = req.file.filename;
-  } else {
-    req.body.image = '';
-    console.log('No file uploaded');
+  let cloudinaryImageUrl = '';
+
+  if (req.file && req.file.path) {
+    const imageName = `note-${Date.now()}`;
+    const cloudinaryRes = await sendImageToCloudinary(req.file.path, imageName);
+    cloudinaryImageUrl = cloudinaryRes.secure_url;
   }
+
   const payload = {
     ...req.body,
+    image: cloudinaryImageUrl,
     isArchived: false,
     isDeleted: false,
   };
@@ -64,7 +68,15 @@ const updateNote = catchAsync(async (req, res) => {
     existingImage,
   } = req.body;
 
-  const image = req.file ? req.file.filename : existingImage;
+  let imageUrl = existingImage;
+
+  if (req.file && req.file.path) {
+    const cloudinaryRes = await sendImageToCloudinary(
+      req.file.path,
+      `note-${Date.now()}`,
+    );
+    imageUrl = cloudinaryRes.secure_url;
+  }
 
   const payload = {
     title,
@@ -73,14 +85,11 @@ const updateNote = catchAsync(async (req, res) => {
     createdAt,
     isArchived: isArchived === 'true',
     isDeleted: isDeleted === 'true',
-    image,
+    image: imageUrl,
   };
-  console.log(payload);
-  console.log('BODY:', req.body);
-  console.log('FILE:', req.file);
 
   const result = await NoteService.updateNoteInroDB(_id, payload);
-  console.log(result);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
