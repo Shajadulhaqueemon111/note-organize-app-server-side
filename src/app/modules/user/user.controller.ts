@@ -6,17 +6,19 @@ import { CreateUserService } from './user.service';
 import httpStatus from 'http-status';
 const createUsers = catchAsync(async (req, res) => {
   const { name, email, password, role } = req.body;
-  const localImagePath = req.file?.path;
 
-  if (!localImagePath) {
+  const fileBuffer = req.file?.buffer;
+
+  if (!fileBuffer) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Profile image is required');
   }
 
-  // Upload image to cloudinary
+  // ✅ Upload buffer directly to Cloudinary
   const cloudinaryResponse = await sendImageToCloudinary(
-    localImagePath,
+    fileBuffer,
     `profile-${Date.now()}`,
   );
+
   const imageUrl = cloudinaryResponse.secure_url;
 
   const userData = {
@@ -26,6 +28,7 @@ const createUsers = catchAsync(async (req, res) => {
     profileImage: imageUrl,
     role,
   };
+
   const result = await CreateUserService.createUserIntoDB(userData);
 
   sendResponse(res, {

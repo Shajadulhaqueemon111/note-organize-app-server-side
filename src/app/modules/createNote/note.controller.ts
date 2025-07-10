@@ -1,20 +1,20 @@
+import AppError from '../../error/app.error';
 import catchAsync from '../utils/catchAsync';
 import sendResponse from '../utils/sendResponse';
 import { sendImageToCloudinary } from '../utils/sendToImageCloudinary';
 import { NoteService } from './note.service';
 import httpStatus from 'http-status';
 const createNote = catchAsync(async (req, res) => {
-  let cloudinaryImageUrl = '';
-
-  if (req.file && req.file.path) {
-    const imageName = `note-${Date.now()}`;
-    const cloudinaryRes = await sendImageToCloudinary(req.file.path, imageName);
-    cloudinaryImageUrl = cloudinaryRes.secure_url;
+  if (!req.file?.buffer) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Image is required');
   }
+
+  const imageName = `note-${Date.now()}`;
+  const cloudinaryRes = await sendImageToCloudinary(req.file.buffer, imageName);
 
   const payload = {
     ...req.body,
-    image: cloudinaryImageUrl,
+    image: cloudinaryRes.secure_url,
     isArchived: false,
     isDeleted: false,
   };
@@ -70,9 +70,10 @@ const updateNote = catchAsync(async (req, res) => {
 
   let imageUrl = existingImage;
 
-  if (req.file && req.file.path) {
+  // ✅ If new image uploaded, use Cloudinary
+  if (req.file && req.file.buffer) {
     const cloudinaryRes = await sendImageToCloudinary(
-      req.file.path,
+      req.file.buffer,
       `note-${Date.now()}`,
     );
     imageUrl = cloudinaryRes.secure_url;
