@@ -2,6 +2,7 @@
 Tech Stack Overview
 
 | **Backend** | Node.js, Express.js, TypeScript, MongoDB, Mongoose, JWT, Bcrypt, Cloudinary,Zod validation |
+
 note-organize-app-server-side
 -backend/
 │
@@ -21,19 +22,29 @@ note-organize-app-server-side
 
 ## ⚙️ Environment Variables Example
 
+
 PORT=
 
 DATABASE_URL=
+
 USER_NAME=
-USER_PASS=
+
+USER_PASS= 
+
 BCRYPT_SALT_ROUND=
 
 JWT_ACCESS_SECRET=
+
 JWT_ACCESS_EXPIRES_IN=
+
 JWT_REFRESH_SECRET=
+
 JWT_REFRESH_EXPIRES_IN=
+
 CLOUDINARY_NAME=
+
 CLOUDINARY_KEY=
+
 CLOUDINARY_SECRET=
 
 git clone https://github.com/Shajadulhaqueemon111/note-organize-app-server-side.git
