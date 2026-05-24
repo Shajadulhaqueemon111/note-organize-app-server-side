@@ -11,10 +11,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173',
-      'https://my-note-organize-app.vercel.app',
-    ],
+    origin: ['http://localhost:5173', 'https://note-organize-app.vercel.app'],
     credentials: true,
   }),
 );
